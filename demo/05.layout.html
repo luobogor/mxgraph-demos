@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graphlayout example for mxGraph</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #graphContainer {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 500px;
+            background: url('./images/grid.gif');
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body onload="main(document.getElementById('graphContainer'))">
+<div id="graphContainer"></div>
+<input id="animate" type="checkbox" checked="checked">Transitions
+</body>
+
+<!-- Sets the basepath for the library if not in same directory -->
+<script>
+mxBasePath = '../src';
+</script>
+
+<!-- Loads and initializes the library -->
+<script src="../src/js/mxClient.js"></script>
+<script>
+function main(container) {
+    const graph = new mxGraph(container);
+    graph.setEnabled(false);
+
+    let style = graph.getStylesheet().getDefaultVertexStyle();
+    // 圆形
+    style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+    // ??
+    style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+    // 白色渐变
+    style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+    style[mxConstants.STYLE_FONTSIZE] = '10';
+
+    graph.gridSize = 40;
+    const parent = graph.getDefaultParent();
+    const layout = new mxFastOrganicLayout(graph);
+    layout.forceConstant = 80;
+
+    const animate = document.getElementById('animate');
+    document.body.insertBefore(mxUtils.button('Circle Layout', (evt) => {
+        graph.getModel().beginUpdate();
+        try {
+            const circleLayout = new mxCircleLayout(graph);
+            circleLayout.execute(parent);
+        } catch (e) {
+            throw e;
+        } finally {
+            if (animate.checked) {
+                // 变形动画
+                const morph = new mxMorphing(graph);
+                morph.addListener(mxEvent.DONE, () => {
+                    graph.getModel().endUpdate();
+                });
+                morph.startAnimation();
+            } else {
+                graph.getModel().endUpdate();
+            }
+        }
+    }), document.body.firstChild);
+
+    document.body.insertBefore(mxUtils.button('Organic Layout', (evt) => {
+        graph.getModel().beginUpdate();
+        try {
+            layout.execute(parent);
+        } catch (e) {
+            throw e;
+        } finally {
+            if (animate.checked) {
+                // 变形动画
+                // Default values are 6, 1.5, 20
+                const morph = new mxMorphing(graph, 10, 1.7, 20);
+                morph.addListener(mxEvent.DONE, () => {
+                    graph.getModel().endUpdate();
+                });
+                morph.startAnimation();
+            } else {
+                graph.getModel().endUpdate();
+            }
+        }
+    }), document.body.firstChild);
+
+    graph.getModel().beginUpdate();
+    const w = 30;
+    const h = 30;
+    try {
+        const v1 = graph.insertVertex(parent, null, 'A', 0, 0, w, h);
+        const v2 = graph.insertVertex(parent, null, 'B', 0, 0, w, h);
+        const v3 = graph.insertVertex(parent, null, 'C', 0, 0, w, h);
+        const v4 = graph.insertVertex(parent, null, 'D', 0, 0, w, h);
+        const v5 = graph.insertVertex(parent, null, 'E', 0, 0, w, h);
+        const v6 = graph.insertVertex(parent, null, 'F', 0, 0, w, h);
+        const v7 = graph.insertVertex(parent, null, 'G', 0, 0, w, h);
+        const v8 = graph.insertVertex(parent, null, 'H', 0, 0, w, h);
+        const e1 = graph.insertEdge(parent, null, 'ab', v1, v2);
+        const e2 = graph.insertEdge(parent, null, 'ac', v1, v3);
+        const e3 = graph.insertEdge(parent, null, 'cd', v3, v4);
+        const e4 = graph.insertEdge(parent, null, 'be', v2, v5);
+        const e5 = graph.insertEdge(parent, null, 'cf', v3, v6);
+        const e6 = graph.insertEdge(parent, null, 'ag', v1, v7);
+        const e7 = graph.insertEdge(parent, null, 'gh', v7, v8);
+        const e8 = graph.insertEdge(parent, null, 'gc', v7, v3);
+        const e9 = graph.insertEdge(parent, null, 'gd', v7, v4);
+        const e10 = graph.insertEdge(parent, null, 'eh', v5, v8);
+
+        layout.execute(parent);
+    } finally {
+        graph.getModel().endUpdate();
+    }
+}
+</script>
+</html>

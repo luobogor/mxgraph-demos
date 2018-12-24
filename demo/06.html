@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello World</title>
+    <title>Model</title>
     <style>
         html, body {
             height: 100%;
@@ -37,17 +37,37 @@ function main(container) {
     const graph = new mxGraph(container);
     // 开启区域选择
     new mxRubberband(graph);
+    debugger;
+    const doc = mxUtils.createXmlDocument();
+    const node = doc.createElement('MyNode');
+    node.setAttribute('label', 'MyLabel');
+    node.setAttribute('attribute1', 'value1');
+
+    graph.convertValueToString = function (cell) {
+        // 下面代码 graph.insertVertex 的第三个值代表 value
+        // cell.value 取值就是 node
+        if (mxUtils.isNode(cell.value)) {
+            return cell.getAttribute('label', '');
+        }
+    };
+
+    const cellLabelChanged = graph.cellLabelChanged;
+    graph.cellLabelChanged = function (cell, newValue, autoSize) {
+        if(mxUtils.isNode(cell.value)){
+            const elt = cell.value.cloneNode(true);
+            elt.setAttribute('label', newValue);
+            newValue = elt;
+        }
+        cellLabelChanged.apply(this, arguments);
+    };
+
     const parent = graph.getDefaultParent();
     graph.getModel().beginUpdate();
     try {
-        const v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-        const v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-        const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
+        graph.insertVertex(parent, null, node, 40, 40, 80, 30);
     } finally {
         graph.getModel().endUpdate();
     }
-    const model = graph.getModel();
-    debugger;
 }
 </script>
 </html>

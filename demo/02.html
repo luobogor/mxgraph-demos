@@ -40,7 +40,6 @@ function main(container) {
     const graph = new mxGraph(container, model);
     graph.setEnabled(false);
     const parent = graph.getDefaultParent();
-
     model.beginUpdate();
     try {
         const v1 = graph.insertVertex(layer1, null, 'Hello,', 20, 20, 80, 30, 'fillColor=#C0C0C0');
@@ -74,6 +73,8 @@ function main(container) {
     document.body.appendChild(mxUtils.button('Layer 1', () => {
         model.setVisible(layer1, !model.isVisible(layer1));
     }));
+    debugger;
+
 }
 </script>
 </html>
