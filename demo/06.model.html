@@ -37,7 +37,6 @@ function main(container) {
     const graph = new mxGraph(container);
     // 开启区域选择
     new mxRubberband(graph);
-    debugger;
     const doc = mxUtils.createXmlDocument();
     const node = doc.createElement('MyNode');
     node.setAttribute('label', 'MyLabel');

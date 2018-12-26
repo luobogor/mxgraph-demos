@@ -21,3 +21,19 @@ root 包含 layers
 layer 包含  组、顶点、边
 组 包含  组、顶点、边
 
+
+
+````js
+// 90度正交连线样式
+graph.getStylesheet().getDefaultEdgeStyle()['edgeStyle'] = 'orthogonalEdgeStyle';
+````
+
+prototype 改写的函数都无法debugger
+
+Geometry
+The width and height values are ignored for edges and the x and y values relate to the positioning of the edge label.
+
+insertEdge 是对 createEdge、addEdge 的封装,createEdge 内部设定 `edge.geometry.relative = true`
+
+Cell Types
+There are two boolean flags on mxCell, vertex and edge, and the helper methods set one of these to true when the cell is created. isVertex(), isEdge() on mxIGraphModel are what the model uses to determine a cell's type, there are not separate objects for either type.
