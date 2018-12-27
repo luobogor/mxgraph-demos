@@ -39,6 +39,7 @@ function main(container) {
     const style = {
         [mxConstants.STYLE_SHAPE]: mxConstants.SHAPE_LABEL,
         [mxConstants.STYLE_PERIMETER]: mxPerimeter.RectanglePerimeter,
+        [mxConstants.STYLE_ROUNDED]: true,
 
         [mxConstants.STYLE_STROKECOLOR]: '#ebb862',
         [mxConstants.STYLE_FONTCOLOR]: '#333333',
@@ -56,7 +57,6 @@ function main(container) {
         [mxConstants.STYLE_SPACING_TOP]: '110',
         [mxConstants.STYLE_SPACING]: '8'
     };
-    console.log(style);
     graph.getStylesheet().putCellStyle('myStyle', style);
 
     const parent = graph.getDefaultParent();

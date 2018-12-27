@@ -37,3 +37,19 @@ insertEdge 是对 createEdge、addEdge 的封装,createEdge 内部设定 `edge.g
 
 Cell Types
 There are two boolean flags on mxCell, vertex and edge, and the helper methods set one of these to true when the cell is created. isVertex(), isEdge() on mxIGraphModel are what the model uses to determine a cell's type, there are not separate objects for either type.
+
+
+删除节点
+graph.removeCells([state.cell]);
+
+拖拽时显示对齐虚线
+````js
+// Enables guides
+mxGraphHandler.prototype.guidesEnabled = true;
+
+// Alt disables guides
+mxGuide.prototype.isEnabledForEvent = function(evt)
+{
+    return !mxEvent.isAltDown(evt);
+};
+````
