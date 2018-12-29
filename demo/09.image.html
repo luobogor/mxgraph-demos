@@ -40,6 +40,7 @@ function main(container) {
         [mxConstants.STYLE_SHAPE]: mxConstants.SHAPE_LABEL,
         [mxConstants.STYLE_PERIMETER]: mxPerimeter.RectanglePerimeter,
         [mxConstants.STYLE_ROUNDED]: true,
+        [mxConstants.STYLE_ARCSIZE]: 6,// 设置圆角程度
 
         [mxConstants.STYLE_STROKECOLOR]: '#ebb862',
         [mxConstants.STYLE_FONTCOLOR]: '#333333',
@@ -57,12 +58,20 @@ function main(container) {
         [mxConstants.STYLE_SPACING_TOP]: '110',
         [mxConstants.STYLE_SPACING]: '8'
     };
-    graph.getStylesheet().putCellStyle('myStyle', style);
 
+    graph.getStylesheet().putCellStyle('myStyle', style);
     const parent = graph.getDefaultParent();
     graph.getModel().beginUpdate();
     try {
-        const v1 = graph.insertVertex(parent, null, 'Hello\nWorld', 120, 120, 120, 150, 'myStyle');
+        const v1 = graph.insertVertex(parent, null, '皮卡丘', 120, 120, 120, 150, 'myStyle');
+        // 动态改变样式
+        setTimeout(() => {
+            graph.getModel().setStyle(v1, 'myStyle;image=images/other/xiaohuo.png');
+            console.log(v1.getStyle(''));
+            // 以下方式设置样式无效??
+            // v1.setStyle('myStyle;image=images/other/xiaohuo.png');
+        }, 1000);
+
     } finally {
         graph.getModel().endUpdate();
     }
