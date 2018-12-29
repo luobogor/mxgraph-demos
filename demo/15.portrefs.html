@@ -1,0 +1,116 @@
+<!--
+  Copyright (c) 2006-2013, JGraph Ltd
+
+  Portsrefs example for mxGraph. This example demonstrates referencing
+  connection points by ID. The main difference to the implementation
+  where the connection point is stored in the connecting edge is that
+  changes to the original port will be reflected in all existing
+  connections since they reference that port.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Port References Example</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #graphContainer {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background: url('./images/grid.gif');
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body onload="main(document.getElementById('graphContainer'))">
+<div id="graphContainer"></div>
+</body>
+
+<!-- Sets the basepath for the library if not in same directory -->
+<script>
+mxBasePath = '../src';
+</script>
+
+<!-- Loads and initializes the library -->
+<script src="../src/js/mxClient.js"></script>
+<script>
+function main(container) {
+    // Replaces the port image
+    // mxConstraintHandler.prototype.pointImage = new mxImage('images/dot.gif', 10, 10);
+
+    // 禁用鼠标右键
+    mxEvent.disableContextMenu(container);
+    const graph = new mxGraph(container);
+    graph.setConnectable(true);
+    new mxRubberband(graph);
+
+    const parent = graph.getDefaultParent();
+
+    const ports = [];
+    ports['w'] = { x: 0, y: 0.5, perimeter: true, constraint: 'west' };
+    ports['e'] = { x: 1, y: 0.5, perimeter: true, constraint: 'east' };
+    ports['n'] = { x: 0.5, y: 0, perimeter: true, constraint: 'north' };
+    ports['s'] = { x: 0.5, y: 1, perimeter: true, constraint: 'south' };
+    ports['nw'] = { x: 0, y: 0, perimeter: true, constraint: 'north west' };
+    ports['ne'] = { x: 1, y: 0, perimeter: true, constraint: 'north east' };
+    ports['sw'] = { x: 0, y: 1, perimeter: true, constraint: 'south west' };
+    ports['se'] = { x: 1, y: 1, perimeter: true, constraint: 'south east' };
+
+
+    // ... except for triangles
+    const ports2 = [];
+
+    // NOTE: Constraint is used later for orthogonal edge routing (currently ignored)
+    ports2['in1'] = { x: 0, y: 0, perimeter: true, constraint: 'west' };
+    ports2['in2'] = { x: 0, y: 0.25, perimeter: true, constraint: 'west' };
+    ports2['in3'] = { x: 0, y: 0.5, perimeter: true, constraint: 'west' };
+    ports2['in4'] = { x: 0, y: 0.75, perimeter: true, constraint: 'west' };
+    ports2['in5'] = { x: 0, y: 1, perimeter: true, constraint: 'west' };
+
+    ports2['out1'] = { x: 0.5, y: 0, perimeter: true, constraint: 'north east' };
+    ports2['out2'] = { x: 1, y: 0.5, perimeter: true, constraint: 'east' };
+    ports2['out3'] = { x: 0.5, y: 1, perimeter: true, constraint: 'south east' };
+
+    // mxShape.prototype.getPorts = () => ports;
+    // mxTriangle.prototype.getPorts = () => ports2;
+    //
+    graph.connectionHandler.isConnectableCell = () => false;
+    // 线条连接到端点时触发
+    mxEdgeHandler.prototype.isConnectableCell = (cell) => graph.connectionHandler.isConnectableCell(cell);
+    //
+    // graph.view.getTerminalPort = function (state, terminal, source) {
+    //     return terminal;
+    // };
+    //
+
+    // 鼠标悬浮在图形时触发
+    graph.getAllConnectionConstraints = function (state, terminal, source) {};
+
+
+
+    // insertEdge 时调用
+    graph.setConnectionConstraint = function (state, terminal, source, constraint) {};
+    // endUpdate 时调用
+    graph.getConnectionConstraint = function (state, terminal, source) {};
+
+    graph.getModel().beginUpdate();
+    try {
+        const v1 = graph.insertVertex(parent, null, 'A', 20, 20, 100, 40);
+        const v2 = graph.insertVertex(parent, null, 'B', 80, 100, 100, 100,
+            'shape=ellipse;perimeter=ellipsePerimeter');
+        const v3 = graph.insertVertex(parent, null, 'C', 190, 30, 100, 60,
+            'shape=triangle;perimeter=trianglePerimeter;direction=south');
+        const e1 = graph.insertEdge(parent, null, '', v1, v2, 'sourcePort=s;targetPort=nw');
+        const e2 = graph.insertEdge(parent, null, '', v1, v3, 'sourcePort=e;targetPort=out3');
+    } finally {
+        graph.getModel().endUpdate();
+    }
+}
+</script>
+</html>

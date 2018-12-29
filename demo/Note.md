@@ -53,3 +53,10 @@ mxGuide.prototype.isEnabledForEvent = function(evt)
     return !mxEvent.isAltDown(evt);
 };
 ````
+
+
+
+???
+portsEnabled
+mxGraph.prototype.portsEnabled
+Specifies if ports are enabled.  This is used in cellConnected to update the respective style.  Default is true.

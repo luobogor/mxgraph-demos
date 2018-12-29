@@ -1,0 +1,77 @@
+<!--
+  Hello, World! example for mxGraph. This example demonstrates using
+  the isPort hook for visually connecting to another cell.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello, World! example for mxGraph</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #graphContainer {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background: url('./images/grid.gif');
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body onload="main(document.getElementById('graphContainer'))">
+<div id="graphContainer"></div>
+</body>
+
+<!-- Sets the basepath for the library if not in same directory -->
+<script>
+mxBasePath = '../src';
+</script>
+
+<!-- Loads and initializes the library -->
+<script src="../src/js/mxClient.js"></script>
+<script>
+function main(container) {
+    // 禁用鼠标右键
+    mxEvent.disableContextMenu(container);
+    const graph = new mxGraph(container);
+    graph.setConnectable(true);
+    // 开启区域选择
+    new mxRubberband(graph);
+
+    graph.isPort = function (cell) {
+        const geo = this.getCellGeometry(cell);
+        return geo != null ? geo.relative : false;
+    };
+    // Removes the folding icon and disables any folding
+    graph.isCellFoldable = function (cell) {
+        return false;
+    };
+
+    const parent = graph.getDefaultParent();
+    graph.getModel().beginUpdate();
+    try {
+        const v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+        v1.setConnectable(false);
+        // 定义两个port
+        const v11 = graph.insertVertex(v1, null, '', 1, 1, 10, 10);
+        v11.geometry.offset = new mxPoint(-5, -5);
+        v11.geometry.relative = true;
+        const v12 = graph.insertVertex(v1, null, '', 1, 0, 10, 10);
+        v12.geometry.offset = new mxPoint(-5, -5);
+        v12.geometry.relative = true;
+
+        const v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+        const v3 = graph.insertVertex(parent, null, 'World2', 200, 20, 80, 30);
+        const e1 = graph.insertEdge(parent, null, '', v11, v2);
+        const e2 = graph.insertEdge(parent, null, '', v12, v3);
+    } finally {
+        graph.getModel().endUpdate();
+    }
+}
+</script>
+</html>
