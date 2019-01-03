@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>activeState</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #graphContainer {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background: url('./images/grid.gif');
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body onload="main(document.getElementById('graphContainer'))">
+<div id="graphContainer"></div>
+</body>
+
+<!-- Sets the basepath for the library if not in same directory -->
+<script>
+mxBasePath = '../src';
+</script>
+
+<!-- Loads and initializes the library -->
+<script src="../src/js/mxClient.js"></script>
+<script>
+function mxVertexToolHandler(state) {
+    mxVertexHandler.apply(this, arguments);
+}
+
+// 继承 mxVertexHandler
+mxVertexToolHandler.prototype = new mxVertexHandler();
+mxVertexToolHandler.prototype.constructor = mxVertexToolHandler;
+//
+mxVertexToolHandler.prototype.domNode = null;
+mxVertexToolHandler.prototype.init = function () {
+    mxVertexHandler.prototype.init.apply(this, arguments);
+    const arrows = {};
+    this.arrows = arrows;
+
+    // this.domNode = document.createElement('div');
+    // this.domNode.style.position = 'absolute';
+    // this.domNode.style.whiteSpace = 'nowrap';
+
+    // Workaround for event redirection via image tag in quirks and IE8
+    function createImage(src) {
+        return mxUtils.createImage(src);
+    };
+
+    // Connect
+    const bottomArrow = createImage('images/check.png');
+    bottomArrow.setAttribute('title', 'Connect');
+    bottomArrow.style.cursor = 'pointer';
+    bottomArrow.style.position = 'absolute';
+    bottomArrow.style.width = '16px';
+    bottomArrow.style.height = '16px';
+    mxEvent.addGestureListeners(bottomArrow,
+        mxUtils.bind(this, function (evt) {
+            const pt = mxUtils.convertPoint(this.graph.container,
+                mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+            this.graph.connectionHandler.start(this.state, pt.x, pt.y);
+            this.graph.isMouseDown = true;
+            this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
+            mxEvent.consume(evt);
+        })
+    );
+
+    const topArrow = createImage('images/check.png');
+    topArrow.setAttribute('title', 'Connect');
+    topArrow.style.cursor = 'pointer';
+    topArrow.style.position = 'absolute';
+    topArrow.style.width = '16px';
+    topArrow.style.height = '16px';
+    mxEvent.addGestureListeners(topArrow,
+        mxUtils.bind(this, function (evt) {
+            const pt = mxUtils.convertPoint(this.graph.container,
+                mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+            this.graph.connectionHandler.start(this.state, pt.x, pt.y);
+            this.graph.isMouseDown = true;
+            this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
+            mxEvent.consume(evt);
+        })
+    );
+
+    const leftArrow = createImage('images/check.png');
+    leftArrow.setAttribute('title', 'Connect');
+    leftArrow.style.cursor = 'pointer';
+    leftArrow.style.position = 'absolute';
+    leftArrow.style.width = '16px';
+    leftArrow.style.height = '16px';
+    mxEvent.addGestureListeners(leftArrow,
+        mxUtils.bind(this, function (evt) {
+            const pt = mxUtils.convertPoint(this.graph.container,
+                mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+            this.graph.connectionHandler.start(this.state, pt.x, pt.y);
+            this.graph.isMouseDown = true;
+            this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
+            mxEvent.consume(evt);
+        })
+    );
+
+    const rightArrow = createImage('images/check.png');
+    rightArrow.setAttribute('title', 'Connect');
+    rightArrow.style.cursor = 'pointer';
+    rightArrow.style.position = 'absolute';
+    rightArrow.style.width = '16px';
+    rightArrow.style.height = '16px';
+    mxEvent.addGestureListeners(rightArrow,
+        mxUtils.bind(this, function (evt) {
+            const pt = mxUtils.convertPoint(this.graph.container,
+                mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+            this.graph.connectionHandler.start(this.state, pt.x, pt.y);
+            this.graph.isMouseDown = true;
+            this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
+            mxEvent.consume(evt);
+        })
+    );
+
+    arrows.top = topArrow;
+    arrows.right = rightArrow;
+    arrows.bottom = bottomArrow;
+    arrows.left = leftArrow;
+
+    Object.values(arrows).forEach(arrow => {
+        this.graph.container.appendChild(arrow);
+    });
+    this.redrawTools();
+};
+
+mxVertexToolHandler.prototype.redraw = function () {
+    mxVertexHandler.prototype.redraw.apply(this);
+    this.redrawTools();
+};
+
+mxVertexToolHandler.prototype.redrawTools = function () {
+    const offset = (node, left, top) => {
+        node.style.left = (this.state.x + this.state.width + left) + 'px';
+        node.style.top = (this.state.y + this.state.height + top) + 'px';
+    };
+
+    if (this.state != null && this.arrows != null) {
+        const { arrows } = this;
+        offset(arrows.top, 6, -50);
+        offset(arrows.bottom, 0, 0);
+        offset(arrows.left, -100, -40);
+        offset(arrows.right, 1, 12);
+    }
+};
+
+mxVertexToolHandler.prototype.destroy = function (sender, me) {
+    mxVertexHandler.prototype.destroy.apply(this, arguments);
+    if (this.domNode != null) {
+        this.domNode.parentNode.removeChild(this.domNode);
+        this.domNode = null;
+    }
+};
+
+function main(container) {
+    mxEvent.disableContextMenu(container);
+    const graph = new mxGraph(container);
+    graph.setConnectable(true);
+
+    graph.createHandler = function (state) {
+        if (state != null && this.model.isVertex(state.cell)) {
+            return new mxVertexToolHandler(state);
+        }
+
+        return mxGraph.prototype.createHandler.apply(this, arguments);
+    };
+
+    const parent = graph.getDefaultParent();
+    graph.getModel().beginUpdate();
+    try {
+        graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+        graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+    } finally {
+        graph.getModel().endUpdate();
+    }
+}
+</script>
+</html>
