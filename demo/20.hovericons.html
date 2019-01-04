@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #graphContainer {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background: url('./images/grid.gif');
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body onload="main(document.getElementById('graphContainer'))">
+<div id="graphContainer"></div>
+</body>
+
+<!-- Sets the basepath for the library if not in same directory -->
+<script>
+mxBasePath = '../src';
+</script>
+
+<!-- Loads and initializes the library -->
+<script src="../src/js/mxClient.js"></script>
+<script>
+
+class mxIconSet {
+    constructor(state) {
+        this.images = [];
+        const graph = state.view.graph;
+
+        const arrowTop = mxUtils.createImage('images/arrow-top.png');
+        arrowTop.setAttribute('title', 'NewEdge');
+        arrowTop.style.position = 'absolute';
+        arrowTop.style.cursor = 'pointer';
+        arrowTop.style.width = '30px';
+        arrowTop.style.height = '30px';
+        arrowTop.style.left = (state.x + state.width / 2 - 15) + 'px';
+        arrowTop.style.top = (state.y - state.height - 4) + 'px';
+
+        mxEvent.addGestureListeners(arrowTop,
+            mxUtils.bind(this, function (evt) {
+                const pt = mxUtils.convertPoint(graph.container,
+                    mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+                graph.connectionHandler.start(state, pt.x, pt.y);
+                graph.isMouseDown = true;
+                graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
+                mxEvent.consume(evt);
+            })
+        );
+        state.view.graph.container.appendChild(arrowTop);
+        this.images.push(arrowTop);
+    }
+
+    destroy() {
+        this.images.forEach((img) => {
+            img.parentNode.removeChild(img);
+        });
+        this.images = null;
+    };
+}
+
+function main(container) {
+    mxEvent.disableContextMenu(container);
+    const graph = new mxGraph(container);
+    const parent = graph.getDefaultParent();
+    graph.setConnectable(true);
+    // 悬浮热区大小
+    const iconTolerance = 40;
+    // Shows icons if the mouse is over a cell
+    graph.addMouseListener({
+        currentState: null,
+        currentIconSet: null,
+        mouseDown(sender, me) {
+            // Hides icons on mouse down
+            if (this.currentState != null) {
+                this.dragLeave(me.getEvent(), this.currentState);
+                this.currentState = null;
+            }
+        },
+        mouseMove(sender, me) {
+            if (this.currentState != null && (me.getState() == this.currentState ||
+                me.getState() == null)) {
+                var tol = iconTolerance;
+                var tmp = new mxRectangle(me.getGraphX() - tol,
+                    me.getGraphY() - tol, 2 * tol, 2 * tol);
+
+                if (mxUtils.intersects(tmp, this.currentState)) {
+                    return;
+                }
+            }
+
+            var tmp = graph.view.getState(me.getCell());
+
+            // Ignores everything but vertices
+            if (graph.isMouseDown || (tmp != null && !graph.getModel().isVertex(tmp.cell))) {
+                tmp = null;
+            }
+
+            if (tmp != this.currentState) {
+                if (this.currentState != null) {
+                    this.dragLeave(me.getEvent(), this.currentState);
+                }
+
+                this.currentState = tmp;
+
+                if (this.currentState != null) {
+                    this.dragEnter(me.getEvent(), this.currentState);
+                }
+            }
+        },
+        mouseUp(sender, me) {},
+        dragEnter(evt, state) {
+            if (this.currentIconSet == null) {
+                this.currentIconSet = new mxIconSet(state);
+            }
+        },
+        dragLeave(evt, state) {
+            if (this.currentIconSet != null) {
+                this.currentIconSet.destroy();
+                this.currentIconSet = null;
+            }
+        },
+    });
+
+    graph.getModel().beginUpdate();
+    try {
+        graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+        graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+    } finally {
+        graph.getModel().endUpdate();
+    }
+}
+</script>
+</html>

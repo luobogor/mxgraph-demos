@@ -156,9 +156,11 @@ mxVertexToolHandler.prototype.redrawTools = function () {
 
 mxVertexToolHandler.prototype.destroy = function (sender, me) {
     mxVertexHandler.prototype.destroy.apply(this, arguments);
-    if (this.domNode != null) {
-        this.domNode.parentNode.removeChild(this.domNode);
-        this.domNode = null;
+    if (this.arrows != null) {
+        Object.values(this.arrows).forEach(arrow => {
+            arrow.parentNode.removeChild(arrow);
+        });
+        this.arrows = null;
     }
 };
 
