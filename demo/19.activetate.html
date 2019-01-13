@@ -42,92 +42,34 @@ mxVertexToolHandler.prototype.constructor = mxVertexToolHandler;
 mxVertexToolHandler.prototype.domNode = null;
 mxVertexToolHandler.prototype.init = function () {
     mxVertexHandler.prototype.init.apply(this, arguments);
-    const arrows = {};
-    this.arrows = arrows;
+    const genArrow = (img) => {
+        const arrow = mxUtils.createImage(img);
+        arrow.setAttribute('title', 'Connect');
+        arrow.style.cursor = 'pointer';
+        arrow.style.position = 'absolute';
+        arrow.style.width = '16px';
+        arrow.style.height = '16px';
+        mxEvent.addGestureListeners(arrow,
+            mxUtils.bind(this, function (evt) {
+                const pt = mxUtils.convertPoint(this.graph.container,
+                    mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+                this.graph.connectionHandler.start(this.state, pt.x, pt.y);
+                this.graph.isMouseDown = true;
+                this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
+                mxEvent.consume(evt);
+            })
+        );
+        return arrow;
+    }
 
-    // this.domNode = document.createElement('div');
-    // this.domNode.style.position = 'absolute';
-    // this.domNode.style.whiteSpace = 'nowrap';
-
-    // Workaround for event redirection via image tag in quirks and IE8
-    function createImage(src) {
-        return mxUtils.createImage(src);
+    const arrows = {
+        top: genArrow('images/arrow/arrow-top.png'),
+        right: genArrow('images/arrow/arrow-right.png'),
+        bottom: genArrow('images/arrow/arrow-bottom.png'),
+        left: genArrow('images/arrow/arrow-left.png'),
     };
 
-    // Connect
-    const bottomArrow = createImage('images/check.png');
-    bottomArrow.setAttribute('title', 'Connect');
-    bottomArrow.style.cursor = 'pointer';
-    bottomArrow.style.position = 'absolute';
-    bottomArrow.style.width = '16px';
-    bottomArrow.style.height = '16px';
-    mxEvent.addGestureListeners(bottomArrow,
-        mxUtils.bind(this, function (evt) {
-            const pt = mxUtils.convertPoint(this.graph.container,
-                mxEvent.getClientX(evt), mxEvent.getClientY(evt));
-            this.graph.connectionHandler.start(this.state, pt.x, pt.y);
-            this.graph.isMouseDown = true;
-            this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
-            mxEvent.consume(evt);
-        })
-    );
-
-    const topArrow = createImage('images/check.png');
-    topArrow.setAttribute('title', 'Connect');
-    topArrow.style.cursor = 'pointer';
-    topArrow.style.position = 'absolute';
-    topArrow.style.width = '16px';
-    topArrow.style.height = '16px';
-    mxEvent.addGestureListeners(topArrow,
-        mxUtils.bind(this, function (evt) {
-            const pt = mxUtils.convertPoint(this.graph.container,
-                mxEvent.getClientX(evt), mxEvent.getClientY(evt));
-            this.graph.connectionHandler.start(this.state, pt.x, pt.y);
-            this.graph.isMouseDown = true;
-            this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
-            mxEvent.consume(evt);
-        })
-    );
-
-    const leftArrow = createImage('images/check.png');
-    leftArrow.setAttribute('title', 'Connect');
-    leftArrow.style.cursor = 'pointer';
-    leftArrow.style.position = 'absolute';
-    leftArrow.style.width = '16px';
-    leftArrow.style.height = '16px';
-    mxEvent.addGestureListeners(leftArrow,
-        mxUtils.bind(this, function (evt) {
-            const pt = mxUtils.convertPoint(this.graph.container,
-                mxEvent.getClientX(evt), mxEvent.getClientY(evt));
-            this.graph.connectionHandler.start(this.state, pt.x, pt.y);
-            this.graph.isMouseDown = true;
-            this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
-            mxEvent.consume(evt);
-        })
-    );
-
-    const rightArrow = createImage('images/check.png');
-    rightArrow.setAttribute('title', 'Connect');
-    rightArrow.style.cursor = 'pointer';
-    rightArrow.style.position = 'absolute';
-    rightArrow.style.width = '16px';
-    rightArrow.style.height = '16px';
-    mxEvent.addGestureListeners(rightArrow,
-        mxUtils.bind(this, function (evt) {
-            const pt = mxUtils.convertPoint(this.graph.container,
-                mxEvent.getClientX(evt), mxEvent.getClientY(evt));
-            this.graph.connectionHandler.start(this.state, pt.x, pt.y);
-            this.graph.isMouseDown = true;
-            this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
-            mxEvent.consume(evt);
-        })
-    );
-
-    arrows.top = topArrow;
-    arrows.right = rightArrow;
-    arrows.bottom = bottomArrow;
-    arrows.left = leftArrow;
-
+    this.arrows = arrows;
     Object.values(arrows).forEach(arrow => {
         this.graph.container.appendChild(arrow);
     });
