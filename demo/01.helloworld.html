@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <title>Hello World</title>
     <style>
-        html, body {
-            height: 100%;
-        }
+    html, body {
+        height: 100%;
+    }
 
-        #graphContainer {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            background: url('./images/grid.gif');
-            cursor: default;
-        }
+    #graphContainer {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        background: url('./images/grid.gif');
+        cursor: default;
+    }
     </style>
 </head>
 
@@ -23,32 +23,30 @@
 <div id="graphContainer"></div>
 </body>
 
-<!-- Sets the basepath for the library if not in same directory -->
 <script>
-mxBasePath = '../src';
+const mxBasePath = '../src';
 </script>
 
-<!-- Loads and initializes the library -->
 <script src="../src/js/mxClient.js"></script>
 <script>
 function main(container) {
-    // 禁用鼠标右键
-    mxEvent.disableContextMenu(container);
-    const graph = new mxGraph(container);
-    graph.setConnectable(true);
-    mxVertexHandler.prototype.livePreview = true;
+  // 禁用鼠标右键
+  mxEvent.disableContextMenu(container);
+  const graph = new mxGraph(container);
+  // 设置这个属性后节点之间才可以连接
+  graph.setConnectable(true);
+  // 开启区域选择
+  new mxRubberband(graph);
 
-    // 开启区域选择
-    new mxRubberband(graph);
-    const parent = graph.getDefaultParent();
-    graph.getModel().beginUpdate();
-    try {
-        const v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-        const v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-        // const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
-    } finally {
-        graph.getModel().endUpdate();
-    }
+  const parent = graph.getDefaultParent();
+  // graph.getModel().beginUpdate();
+  // try {
+  const v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+  const v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+  const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
+  // } finally {
+  //     graph.getModel().endUpdate();
+  // }
 }
 </script>
 </html>

@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <title>Anchors example for mxGraph</title>
     <style>
-        html, body {
-            height: 100%;
-        }
+    html, body {
+        height: 100%;
+    }
 
-        #graphContainer {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            background: url('./images/grid.gif');
-            cursor: default;
-        }
+    #graphContainer {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        background: url('./images/grid.gif');
+        cursor: default;
+    }
     </style>
 </head>
 
@@ -34,56 +34,58 @@ mxBasePath = '../src';
 // Overridden to define per-shape connection points
 // 重写以定义每个形状的连接点
 mxGraph.prototype.getAllConnectionConstraints = function (terminal, source) {
-    if (terminal != null && terminal.shape != null) {
-        if (terminal.shape.stencil != null) {
-            if (terminal.shape.stencil != null) {
-                return terminal.shape.stencil.constraints;
-            }
-        } else if (terminal.shape.constraints != null) {
-            return terminal.shape.constraints;
-        }
+  if (terminal != null && terminal.shape != null) {
+    if (terminal.shape.stencil != null) {
+      if (terminal.shape.stencil != null) {
+        return terminal.shape.stencil.constraints;
+      }
+    } else if (terminal.shape.constraints != null) {
+      return terminal.shape.constraints;
     }
+  }
 
-    return null;
+  return null;
 };
 // 定义锚点
 mxShape.prototype.constraints = [// true 参数的作用是?
-    new mxConnectionConstraint(new mxPoint(0.25, 1), true),
-    new mxConnectionConstraint(new mxPoint(0.5, 1), true),
-    new mxConnectionConstraint(new mxPoint(0.75, 1), true),
+  new mxConnectionConstraint(new mxPoint(0.25, 1), true),
+  new mxConnectionConstraint(new mxPoint(0.5, 1), true),
+  new mxConnectionConstraint(new mxPoint(0.75, 1), true),
 ];
 // Edges have no connection points ??
 mxPolyline.prototype.constraints = null;
 
 
 function main(container) {
-    // 禁用鼠标右键
-    mxEvent.disableContextMenu(container);
-    const graph = new mxGraph(container);
-    // Specifies if the graph should allow new connections
-    graph.setConnectable(true);
-    // 将使拖动中的线条样式设为正交
-    graph.connectionHandler.createEdgeState = function (me) {
-        const edge = graph.createEdge(null, null, null, null, null);
-        const cellState = new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
-        return cellState;
-    };
+  // 禁用鼠标右键
+  mxEvent.disableContextMenu(container);
+  const graph = new mxGraph(container);
+  // Specifies if the graph should allow new connections
+  graph.setConnectable(true);
+  // 将使拖动中的线条样式设为正交
+  graph.connectionHandler.createEdgeState = function (me) {
+    const edge = graph.createEdge(null, null, null, null, null);
+    const cellState = new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
+    return cellState;
+  };
 
-    // Specifies the default edge style
-    graph.getStylesheet().getDefaultEdgeStyle()['edgeStyle'] = 'orthogonalEdgeStyle';
+  // Specifies the default edge style
+  graph.getStylesheet().getDefaultEdgeStyle()['edgeStyle'] = 'orthogonalEdgeStyle';
 
-    // Enables rubberband selection
-    new mxRubberband(graph);
+  // Enables rubberband selection
+  new mxRubberband(graph);
 
-    const parent = graph.getDefaultParent();
-    graph.getModel().beginUpdate();
-    try {
-        const v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-        const v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-        const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
-    } finally {
-        graph.getModel().endUpdate();
-    }
+  const parent = graph.getDefaultParent();
+  graph.getModel().beginUpdate();
+  try {
+    const v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+    const v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+    const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
+    // TODO
+    // var e1 = graph.insertEdge(parent, null, 'exitX=0.25;exitY=0;entryX=0.75;entryY=1', v1, v2,'exitX=0.25;exitY=0;entryX=0.75;entryY=1');
+  } finally {
+    graph.getModel().endUpdate();
+  }
 }
 </script>
 </html>

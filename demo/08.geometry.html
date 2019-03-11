@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <title>Geometry</title>
     <style>
-        html, body {
-            height: 100%;
-        }
+    html, body {
+        height: 100%;
+    }
 
-        #graphContainer {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            background: url('./images/grid.gif');
-            cursor: default;
-        }
+    #graphContainer {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        background: url('./images/grid.gif');
+        cursor: default;
+    }
     </style>
 </head>
 
@@ -25,40 +25,45 @@
 
 <!-- Sets the basepath for the library if not in same directory -->
 <script>
-mxBasePath = '../src';
+const mxBasePath = '../src';
 </script>
 
 <!-- Loads and initializes the library -->
 <script src="../src/js/mxClient.js"></script>
 <script>
 function main(container) {
-    // 禁用鼠标右键
-    mxEvent.disableContextMenu(container);
-    const graph = new mxGraph(container);
-    // 开启区域选择
-    new mxRubberband(graph);
-    const parent = graph.getDefaultParent();
-    graph.getModel().beginUpdate();
-    try {
-        const v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-        const v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-        const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
-        // relative position，以线条中点为中心
-        e1.geometry.offset = new mxPoint(50, 30); // label 位置向右偏移50px，向下偏移30px，默认 null
-        e1.geometry.x = -0.5; // [-1,1] 调整 label 沿连接线的位置
-        e1.geometry.y = 30; // 调整label 在正交线上的距离
+  // 禁用鼠标右键
+  mxEvent.disableContextMenu(container);
+  const graph = new mxGraph(container);
+  // 开启区域选择
+  new mxRubberband(graph);
+  const parent = graph.getDefaultParent();
+  graph.getModel().beginUpdate();
+  try {
+    // 相对画布定位
+    graph.insertVertex(parent, null, 'Hello', 50, 20, 80, 30);
+    // 相对父级定位
+    const v_1 = graph.insertVertex(parent, null, 'Hello', 170, 20, 100, 200);
+    const v_2 = graph.insertVertex(v_1, null, 'World!', 0.5, 1, 80, 30);
+    v_2.geometry.relative = true;
+    // 线条label定位
+    const v1 = graph.insertVertex(parent, null, 'Hello,', 320, 20, 80, 30);
+    const v2 = graph.insertVertex(parent, null, 'World!', 500, 150, 80, 30);
+    const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
+    // relative position，以线条中点为中心
+    e1.geometry.x = 0; // [-1,1] 调整 label 沿连接线的位置
+    e1.geometry.y = 100; // 调整label 在正交线上的距离
 
-        const v3 = graph.insertVertex(parent, null, 'Hello,', 320, 20, 80, 30);
-        const v4 = graph.insertVertex(parent, null, 'World!', 500, 150, 80, 30);
-        const e2 = graph.insertEdge(parent, null, '30%', v3, v4);
-        // non-relative position 其他设置无效
-        e2.geometry.relative = false;
-        e1.geometry.offset = new mxPoint(50, 30);
-        e2.geometry.x = 200;
-        e2.geometry.y = 400;
-    } finally {
-        graph.getModel().endUpdate();
-    }
+    const v3 = graph.insertVertex(parent, null, 'Hello,', 320, 320, 80, 30);
+    const v4 = graph.insertVertex(parent, null, 'World!', 500, 450, 80, 30);
+    const e2 = graph.insertEdge(parent, null, '30%', v3, v4);
+    // relative 必须为 true，false 无效
+    e2.geometry.relative = false;
+    e2.geometry.x = 1;
+    e2.geometry.y = 400;
+  } finally {
+    graph.getModel().endUpdate();
+  }
 }
 </script>
 </html>
