@@ -23,9 +23,8 @@
 <div id="graphContainer"></div>
 </body>
 
-<!-- Sets the basepath for the library if not in same directory -->
 <script>
-mxBasePath = '../src';
+const mxBasePath = '../src';
 </script>
 
 <!-- Loads and initializes the library -->
@@ -46,46 +45,47 @@ mxGraph.prototype.getAllConnectionConstraints = function (terminal, source) {
 
   return null;
 };
-// 定义锚点
-mxShape.prototype.constraints = [// true 参数的作用是?
+// 定义靶点
+mxShape.prototype.constraints = [new mxConnectionConstraint(new mxPoint(0.25, 0), true),
+  new mxConnectionConstraint(new mxPoint(0.5, 0), true),
+  new mxConnectionConstraint(new mxPoint(0.75, 0), true),
+  new mxConnectionConstraint(new mxPoint(0, 0.25), true),
+  new mxConnectionConstraint(new mxPoint(0, 0.5), true),
+  new mxConnectionConstraint(new mxPoint(0, 0.75), true),
+  new mxConnectionConstraint(new mxPoint(1, 0.25), true),
+  new mxConnectionConstraint(new mxPoint(1, 0.5), true),
+  new mxConnectionConstraint(new mxPoint(1, 0.75), true),
   new mxConnectionConstraint(new mxPoint(0.25, 1), true),
   new mxConnectionConstraint(new mxPoint(0.5, 1), true),
-  new mxConnectionConstraint(new mxPoint(0.75, 1), true),
-];
-// Edges have no connection points ??
-mxPolyline.prototype.constraints = null;
-
+  new mxConnectionConstraint(new mxPoint(0.75, 1), true)];
 
 function main(container) {
-  // 禁用鼠标右键
-  mxEvent.disableContextMenu(container);
   const graph = new mxGraph(container);
-  // Specifies if the graph should allow new connections
   graph.setConnectable(true);
-  // 将使拖动中的线条样式设为正交
-  graph.connectionHandler.createEdgeState = function (me) {
-    const edge = graph.createEdge(null, null, null, null, null);
-    const cellState = new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
-    return cellState;
-  };
-
-  // Specifies the default edge style
-  graph.getStylesheet().getDefaultEdgeStyle()['edgeStyle'] = 'orthogonalEdgeStyle';
-
-  // Enables rubberband selection
-  new mxRubberband(graph);
-
+  graph.setAllowDanglingEdges(false);
   const parent = graph.getDefaultParent();
   graph.getModel().beginUpdate();
   try {
-    const v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-    const v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-    const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
-    // TODO
-    // var e1 = graph.insertEdge(parent, null, 'exitX=0.25;exitY=0;entryX=0.75;entryY=1', v1, v2,'exitX=0.25;exitY=0;entryX=0.75;entryY=1');
+    graph.insertVertex(parent, null, 'A', 20, 20, 80, 80);
+    graph.insertVertex(parent, null, 'B', 200, 150, 80, 80);
   } finally {
     graph.getModel().endUpdate();
   }
+
+  const alertAnchor = (sender, evt) => {
+    const edge = evt.properties.cells[0];
+    alert(edge.style);
+  };
+
+  // 初次连接边
+  graph.addListener(mxEvent.ADD_CELLS, (...args) => {
+    setTimeout(() => {
+      // 初次连接边无法获取 靶点坐标，异步处理后可获取
+      alertAnchor(...args)
+    }, 0);
+  });
+  // 二次连接边
+  graph.addListener(mxEvent.CONNECT_CELL, alertAnchor);
 }
 </script>
 </html>

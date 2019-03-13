@@ -41,11 +41,10 @@ function main(container) {
   graph.getModel().beginUpdate();
   try {
     // 相对画布定位
-    graph.insertVertex(parent, null, 'Hello', 50, 20, 80, 30);
+    graph.insertVertex(parent, null, 'A', 50, 20, 80, 30);
     // 相对父级定位
-    const v_1 = graph.insertVertex(parent, null, 'Hello', 170, 20, 100, 200);
-    const v_2 = graph.insertVertex(v_1, null, 'World!', 0.5, 1, 80, 30);
-    v_2.geometry.relative = true;
+    const v_1 = graph.insertVertex(parent, null, 'B', 170, 20, 100, 200);
+    const v_2 = graph.insertVertex(v_1, null, 'C', 0.5, 1, 80, 30, '', true);
     // 线条label定位
     const v1 = graph.insertVertex(parent, null, 'Hello,', 320, 20, 80, 30);
     const v2 = graph.insertVertex(parent, null, 'World!', 500, 150, 80, 30);
