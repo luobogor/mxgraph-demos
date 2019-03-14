@@ -7,18 +7,18 @@
     <meta charset="UTF-8">
     <title>Consistuent example for mxGraph</title>
     <style>
-        html, body {
-            height: 100%;
-        }
+    html, body {
+        height: 100%;
+    }
 
-        #graphContainer {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            background: url('./images/grid.gif');
-            cursor: default;
-        }
+    #graphContainer {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        background: url('./images/grid.gif');
+        cursor: default;
+    }
     </style>
 </head>
 
@@ -28,60 +28,64 @@
 
 <!-- Sets the basepath for the library if not in same directory -->
 <script>
-mxBasePath = '../static';
+const mxBasePath = '../static/mxgraph';
 </script>
 
 <!-- Loads and initializes the library -->
 <script src="../mxClient.js"></script>
 <script>
 function main(container) {
-    // 禁用鼠标右键
-    mxEvent.disableContextMenu(container);
-    const graph = new mxGraph(container);
+  // 禁用鼠标右键
+  mxEvent.disableContextMenu(container);
+  const graph = new mxGraph(container);
 
-    const getInitialCellForEvent = mxGraphHandler.prototype.getInitialCellForEvent;
-    mxGraphHandler.prototype.getInitialCellForEvent = function (me) {
-        let cell = getInitialCellForEvent.apply(this, arguments);
-        if (this.graph.isPart(cell)) {
-            cell = this.graph.getModel().getParent(cell);
-        }
-        return cell;
-    };
 
-    // Creates the graph inside the given container
-    // 禁用折叠
-    graph.foldingEnabled = false;
-    // 内部cell 跟随 父cell 等比例缩放
-    graph.recursiveResize = true;
+  graph.isPart = function (cell) {
+    const state = this.view.getState(cell);
+    const style = (state != null) ? state.style : this.getCellStyle(cell);
+    return style['constituent'] == '1';
+  };
 
-    graph.isPart = function (cell) {
-        const state = this.view.getState(cell);
-        const style = (state != null) ? state.style : this.getCellStyle(cell);
-        return style['constituent'] == '1';
-    };
-
-    // Redirects selection to parent
-    graph.selectCellForEvent = function (cell) {
-        if (this.isPart(cell)) {
-            mxGraph.prototype.selectCellForEvent.call(this, this.model.getParent(cell));
-            return;
-        }
-
-        mxGraph.prototype.selectCellForEvent.apply(this, arguments);
-    };
-
-    graph.addListener(mxEvent.CLICK, function (sender, evt) {
-        console.log(arguments);
-    });
-
-    const parent = graph.getDefaultParent();
-    graph.getModel().beginUpdate();
-    try {
-        const v1 = graph.insertVertex(parent, null, '', 20, 20, 120, 70);
-        const v2 = graph.insertVertex(v1, null, 'Constituent', 20, 20, 80, 30, 'constituent=1;');
-    } finally {
-        graph.getModel().endUpdate();
+  /**
+   * Redirects start drag to parent.
+   */
+  const getInitialCellForEvent = mxGraphHandler.prototype.getInitialCellForEvent;
+  mxGraphHandler.prototype.getInitialCellForEvent = function (me) {
+    let cell = getInitialCellForEvent.apply(this, arguments);
+    if (this.graph.isPart(cell)) {
+      cell = this.graph.getModel().getParent(cell);
     }
+    return cell;
+  };
+
+  // Redirects selection to parent
+  graph.selectCellForEvent = function (cell) {
+    if (this.isPart(cell)) {
+      mxGraph.prototype.selectCellForEvent.call(this, this.model.getParent(cell));
+      return;
+    }
+
+    mxGraph.prototype.selectCellForEvent.apply(this, arguments);
+  };
+
+  // Creates the graph inside the given container
+  // 禁用折叠
+  graph.foldingEnabled = false;
+  // 内部cell 跟随 父cell 等比例缩放
+  graph.recursiveResize = true;
+
+  graph.addListener(mxEvent.CLICK, function (sender, evt) {
+    console.log(arguments);
+  });
+
+  const parent = graph.getDefaultParent();
+  graph.getModel().beginUpdate();
+  try {
+    const v1 = graph.insertVertex(parent, null, '', 20, 20, 120, 70);
+    const v2 = graph.insertVertex(v1, null, 'Constituent', 20, 20, 80, 30, 'constituent=1;');
+  } finally {
+    graph.getModel().endUpdate();
+  }
 }
 </script>
 </html>
