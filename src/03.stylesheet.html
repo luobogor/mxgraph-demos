@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>stylesheet</title>
+    <style>
+    html, body {
+        height: 100%;
+    }
+
+    #graphContainer {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        background: url('./images/grid.gif');
+        cursor: default;
+    }
+    </style>
+</head>
+
+<body onload="main(document.getElementById('graphContainer'))">
+<div id="graphContainer"></div>
+</body>
+
+<script>
+const mxBasePath = '../static';
+</script>
+
+<script src="../mxClient.js"></script>
+<script>
+// 自定义命名样式
+const putVertexStyle = (graph) => {
+  const myVertexStyle = {
+    [mxConstants.STYLE_STROKECOLOR]: 'none',
+    [mxConstants.STYLE_ROUNDED]: true,
+  };
+  graph.getStylesheet().putCellStyle('myVertex', myVertexStyle);
+};
+// 全局样式
+const setDefaultEdgeStyle = (graph) => {
+  const style = graph.getStylesheet().getDefaultEdgeStyle();
+  Object.assign(style, {
+    [mxConstants.STYLE_ROUNDED]: true, // 设置线条拐弯处为圆角
+    [mxConstants.STYLE_STROKEWIDTH]: '3',
+    [mxConstants.STYLE_STROKECOLOR]: '#333333',
+    [mxConstants.STYLE_EDGE]: mxConstants.EDGESTYLE_ORTHOGONAL,// 设置折线
+    [mxConstants.STYLE_FONTCOLOR]: '#33333',
+    [mxConstants.STYLE_LABEL_BACKGROUNDCOLOR]: '#ffa94d',
+  });
+
+  graph.connectionHandler.createEdgeState = function () {
+    const edge = this.createEdge();
+    return new mxCellState(graph.view, edge, graph.getCellStyle(edge));
+  };
+};
+
+function main(container) {
+  // 禁用鼠标右键
+  mxEvent.disableContextMenu(container);
+  const graph = new mxGraph(container);
+  graph.setConnectable(true);
+
+  putVertexStyle(graph);
+  setDefaultEdgeStyle(graph);
+
+  const parent = graph.getDefaultParent();
+  graph.getModel().beginUpdate();
+  try {
+    const v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30, 'myVertex;fontSize=20;');
+    const v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+    const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
+  } finally {
+    graph.getModel().endUpdate();
+  }
+}
+</script>
+</html>
