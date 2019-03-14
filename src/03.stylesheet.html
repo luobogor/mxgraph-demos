@@ -29,14 +29,6 @@ const mxBasePath = '../static/mxgraph';
 
 <script src="../mxClient.js"></script>
 <script>
-// 自定义命名样式
-const putVertexStyle = (graph) => {
-  const myVertexStyle = {
-    [mxConstants.STYLE_STROKECOLOR]: 'none',
-    [mxConstants.STYLE_ROUNDED]: true,
-  };
-  graph.getStylesheet().putCellStyle('myVertex', myVertexStyle);
-};
 // 全局样式
 const setDefaultEdgeStyle = (graph) => {
   const style = graph.getStylesheet().getDefaultEdgeStyle();
@@ -55,14 +47,23 @@ const setDefaultEdgeStyle = (graph) => {
   };
 };
 
+// 自定义命名样式
+const putVertexStyle = (graph) => {
+  const myVertexStyle = {
+    [mxConstants.STYLE_STROKECOLOR]: 'none',
+    [mxConstants.STYLE_ROUNDED]: true,
+  };
+  graph.getStylesheet().putCellStyle('myVertex', myVertexStyle);
+};
+
 function main(container) {
   // 禁用鼠标右键
   mxEvent.disableContextMenu(container);
   const graph = new mxGraph(container);
   graph.setConnectable(true);
 
-  putVertexStyle(graph);
   setDefaultEdgeStyle(graph);
+  putVertexStyle(graph);
 
   const parent = graph.getDefaultParent();
   graph.getModel().beginUpdate();

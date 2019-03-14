@@ -50,7 +50,7 @@ function main(container) {
     const v2 = graph.insertVertex(parent, null, 'World!', 500, 150, 80, 30);
     const e1 = graph.insertEdge(parent, null, '30%', v1, v2);
     // relative position，以线条中点为中心
-    e1.geometry.x = 0; // [-1,1] 调整 label 沿连接线的位置
+    e1.geometry.x = 1; // [-1,1] 调整 label 沿连接线的位置
     e1.geometry.y = 100; // 调整label 在正交线上的距离
 
     const v3 = graph.insertVertex(parent, null, 'Hello,', 320, 320, 80, 30);
