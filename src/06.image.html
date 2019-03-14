@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #graphContainer {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background: url('./images/grid.gif');
+            cursor: default;
+        }
+    </style>
+</head>
+
+<body onload="main(document.getElementById('graphContainer'))">
+<div id="graphContainer"></div>
+</body>
+
+<!-- Sets the basepath for the library if not in same directory -->
+<script>
+mxBasePath = '../static';
+</script>
+
+<!-- Loads and initializes the library -->
+<script src="../mxClient.js"></script>
+<script>
+function main(container) {
+    const graph = new mxGraph(container);
+
+    const style = {
+        [mxConstants.STYLE_SHAPE]: mxConstants.SHAPE_LABEL,
+        [mxConstants.STYLE_PERIMETER]: mxPerimeter.RectanglePerimeter,
+        [mxConstants.STYLE_ROUNDED]: true,
+        [mxConstants.STYLE_ARCSIZE]: 6,// 设置圆角程度
+
+        [mxConstants.STYLE_STROKECOLOR]: '#ebb862',
+        [mxConstants.STYLE_FONTCOLOR]: '#333333',
+        [mxConstants.STYLE_FILLCOLOR]: '#FFFFFF',
+        [mxConstants.STYLE_LABEL_BACKGROUNDCOLOR]: '#e6e6e6',
+
+        [mxConstants.STYLE_ALIGN]: mxConstants.ALIGN_CENTER,
+        [mxConstants.STYLE_VERTICAL_ALIGN]: mxConstants.ALIGN_TOP,
+        [mxConstants.STYLE_IMAGE_ALIGN]: mxConstants.ALIGN_CENTER,
+        [mxConstants.STYLE_IMAGE_VERTICAL_ALIGN]: mxConstants.ALIGN_TOP,
+
+        [mxConstants.STYLE_IMAGE]: 'images/other/pika.jpg',
+        [mxConstants.STYLE_IMAGE_WIDTH]: '100',
+        [mxConstants.STYLE_IMAGE_HEIGHT]: '100',
+        [mxConstants.STYLE_SPACING_TOP]: '110',
+        [mxConstants.STYLE_SPACING]: '8'
+    };
+
+    graph.getStylesheet().putCellStyle('myStyle', style);
+    const parent = graph.getDefaultParent();
+    graph.getModel().beginUpdate();
+    try {
+        const v1 = graph.insertVertex(parent, null, '皮卡丘', 120, 120, 120, 150, 'myStyle');
+
+        // 动态改变样式
+        setTimeout(() => {
+            graph.getModel().setStyle(v1, 'myStyle;image=images/other/xiaohuo.png');
+        }, 1000);
+    } finally {
+        graph.getModel().endUpdate();
+    }
+}
+</script>
+</html>
